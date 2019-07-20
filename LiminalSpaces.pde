@@ -38,6 +38,8 @@ void setup(){
   
   
 }
+float offsetX,offsetY;
+
 int resizeAm = 0;
 
 String fileToString(String file){
@@ -62,12 +64,18 @@ void mousePressed(){
 
 float tick=0;
 void draw(){
+  offsetX=width/2-resizeAm*(drawBuffer.width/2);offsetY=height/2-resizeAm*(drawBuffer.height/2);
   tick++;
   background(0);
   drawBuffer.beginDraw();
-  drawBuffer.background(0);
+  drawBuffer.clear();
   
   current.draw();
+  for(int i =0;i<inventory.size();i++){
+    drawBuffer.image(inventory.get(i).inventorySprite,i*30,drawBuffer.height-25);
+  }
+  
+  
   drawBuffer.endDraw();
   
   screenBuffer.beginDraw();
@@ -90,7 +98,15 @@ void draw(){
   
 }
 
-
+ArrayList<Item> inventory = new ArrayList();
+Item getItemInven(String id){
+  for(Item i:inventory){
+    if(i.id.equals(id)){
+      return i;
+    }
+  }
+  return null;
+}  
 HashMap<String,Item> itemArchive = new HashMap();
 
 
@@ -101,10 +117,19 @@ class Item{
   
   Item(JSONObject data){
     id = data.getString("id");
+    worldSprite=loadImage(data.getString("spritename")+"WORLD.png");
+    inventorySprite=loadImage(data.getString("spritename")+"INVEN.png");
   }
 }
 
 abstract class Interactable{
+  boolean locked = false;
+  String id;
+  
+  String usesItem;
+  boolean consumesItem;
+  boolean itemPermUnlock;
+  String unlocks;
   abstract void onMousePress();
   void draw(){}
 }
@@ -120,6 +145,45 @@ void switchScreen(String id){
   }
 }
 
+ArrayList<Interactable> allInteracts = new ArrayList();
+Interactable getInteract(String id){
+  for(Interactable s:allInteracts){
+    if(s.id.equals(id)){
+      return s;
+    }
+  }
+  return null;
+}
+
+class Clicktrigger extends Interactable{
+  int x,y,w,h;
+  Clicktrigger(int x,int y,int w,int h){
+    this.x=x;
+    this.y=y;
+    this.w=w;
+    this.h=h;
+  }
+  void onMousePress(){
+    boolean pass = false;
+    if(usesItem!=null){
+      Item use = getItemInven(usesItem);
+      if(use==null){
+        return;
+      }
+      if(consumesItem){
+        inventory.remove(inventory.indexOf(use));
+      }
+      if(itemPermUnlock){
+        locked = false;
+      }
+      pass = true;
+    }
+    if((!locked||pass)&&isIn((mouseX+offsetX)/resizeAm,(mouseY+offsetY)/resizeAm,x,y,x+w,y+h)){
+      getInteract(unlocks).locked=false;
+    }
+  }
+}
+
 class ScreenSwitch extends Interactable{
   int x,y,w,h;
   String sid;
@@ -131,7 +195,21 @@ class ScreenSwitch extends Interactable{
     sid = screenid;
   }
   void onMousePress(){
-    if(isIn(mouseX,mouseY,x,y,x+w,y+h)){
+    boolean pass = false;
+    if(usesItem!=null){
+      Item use = getItemInven(usesItem);
+      if(use==null){
+        return;
+      }
+      if(consumesItem){
+        inventory.remove(inventory.indexOf(use));
+      }
+      if(itemPermUnlock){
+        locked = false;
+      }
+      pass = true;
+    }
+    if((!locked||pass)&&isIn((mouseX+offsetX)/resizeAm,(mouseY+offsetY)/resizeAm,x,y,x+w,y+h)){
       switchScreen(sid);
     }
   }
@@ -150,14 +228,32 @@ class ItemCollect extends Interactable{
     it = itemArchive.get(itemid);
   }
   void onMousePress(){
-    if(isIn(mouseX,mouseY,x,y,x+w,y+h)){
+    boolean pass = false;
+    if(usesItem!=null){
+      Item use = getItemInven(usesItem);
+      if(use==null){
+        return;
+      }
+      if(consumesItem){
+        inventory.remove(inventory.indexOf(use));
+      }
+      if(itemPermUnlock){
+        locked = false;
+      }
+      pass = true;
+    }
+    if((!locked||pass)&&!collected&&isIn((mouseX-offsetX)/resizeAm,(mouseY-offsetY)/resizeAm,x,y,x+w,y+h)){
       
+      println("wow");
+      inventory.add(it);
+      collected = true;
     }
   }
   @Override
   void draw(){
     if(!collected){
-      
+     // drawBuffer.ellipse((mouseX-offsetX)/resizeAm,(mouseY-offsetY)/resizeAm,5,5);
+      drawBuffer.image(it.worldSprite,x,y,w,h);
     }
   }
 
@@ -172,6 +268,10 @@ class Screen{
   
   boolean loopAnimation = true;
   
+  
+  PShader shader = null;
+  float input1,input2,input3,input4;
+  
   Screen(JSONObject data){
     id = data.getString("id");
     animation = new PImage[data.getInt("frames")];
@@ -181,12 +281,57 @@ class Screen{
     loopAnimation = data.getBoolean("loop");
     
     JSONArray interacts = data.getJSONArray("interact");
+    
     for(int i = 0;i<interacts.size();i++){
       JSONObject current = interacts.getJSONObject(i);
       switch(current.getString("type")){
         case "screen switch":
           ScreenSwitch sw = new ScreenSwitch(current .getInt("x"),current .getInt("y"),current .getInt("w"),current .getInt("h"),current .getString("screen id"));
+          sw.id = current .getString("id");
+          sw.locked = current.hasKey("lock");
+          sw.unlocks = current.getString("unlocks trigger");
+          sw.usesItem = current.getString("needs item");
+          
+          if(current.hasKey("consumes item")){
+            sw.consumesItem = current.getBoolean("consumes item");
+          }
+          if(current.hasKey("item unlocks trigger")){
+            sw.itemPermUnlock = current.getBoolean("item unlocks trigger");
+          }
           this.interacts.add(sw);
+        break;
+        case "item collect":
+          String iid = current .getJSONObject("item").getString("id");
+          if(!itemArchive.containsKey(iid )){
+            itemArchive.put(iid ,new Item(current .getJSONObject("item")));
+          }
+          ItemCollect ic = new ItemCollect(current .getInt("x"),current .getInt("y"),current .getInt("w"),current .getInt("h"),iid );
+          ic.id = current .getString("id");
+          ic.locked = current.hasKey("lock");
+          ic.unlocks = current.getString("unlocks trigger");
+          ic.usesItem = current.getString("needs item");
+          if(current.hasKey("consumes item")){
+            ic.consumesItem = current.getBoolean("consumes item");
+          }
+          if(current.hasKey("item unlocks trigger")){
+            ic.itemPermUnlock = current.getBoolean("item unlocks trigger");
+          }
+          this.interacts.add(ic);
+        break;
+        
+        case "click trigger":
+          Clicktrigger ct = new Clicktrigger(current .getInt("x"),current .getInt("y"),current .getInt("w"),current .getInt("h"));
+           ct .id = current .getString("id");
+           ct .locked = current.hasKey("lock");
+           ct .unlocks = current.getString("unlocks trigger");
+           ct .usesItem = current.getString("needs item");
+          if(current.hasKey("consumes item")){
+             ct .consumesItem = current.getBoolean("consumes item");
+          }
+          if(current.hasKey("item unlocks trigger")){
+             ct .itemPermUnlock = current.getBoolean("item unlocks trigger");
+          }
+          this.interacts.add( ct );
         break;
       }
     }
@@ -216,7 +361,9 @@ class Screen{
     tick++;
     
     drawBuffer.image(animation[(loopAnimation?frame:max(frame,animation.length-1))%animation.length],0,0);
-  
+    for(Interactable i:interacts){
+      i.draw();
+    }
   }
   
   
