@@ -60,7 +60,9 @@ void mousePressed(){
   current.onMouseClick();
 }
 
+float tick=0;
 void draw(){
+  tick++;
   background(0);
   drawBuffer.beginDraw();
   drawBuffer.background(0);
@@ -70,8 +72,10 @@ void draw(){
   
   screenBuffer.beginDraw();
   screenBuffer.background(0);
-  dither.set("color",0.8,0.8,1.0);
-  
+  dither.set("color",200/255f,191/255f,231/255f);
+  dither.set("colormid",163/255f,73/255f,164/255f);
+  dither.set("colordark",0.1,0.1,0.1);
+  dither.set("ditheroffset",tick*0.05);
   dither.set("bayer",new float[]{0,    8*16, 2*16, 10*16,
                 12*16,4*16, 14*16, 6*16,
                 3*16 ,11*16,1*16 , 9*16,
@@ -87,8 +91,22 @@ void draw(){
 }
 
 
+HashMap<String,Item> itemArchive = new HashMap();
+
+
+class Item{
+  String id;
+  PImage worldSprite;
+  PImage inventorySprite;
+  
+  Item(JSONObject data){
+    id = data.getString("id");
+  }
+}
+
 abstract class Interactable{
   abstract void onMousePress();
+  void draw(){}
 }
 
 ArrayList<Screen> screenList = new ArrayList();
@@ -120,7 +138,30 @@ class ScreenSwitch extends Interactable{
 
 }
 
+class ItemCollect extends Interactable{
+  int x,y,w,h;
+  Item it;
+  boolean collected = false;
+  ItemCollect(int x,int y,int w,int h,String itemid){
+    this.x=x;
+    this.y=y;
+    this.w=w;
+    this.h=h;
+    it = itemArchive.get(itemid);
+  }
+  void onMousePress(){
+    if(isIn(mouseX,mouseY,x,y,x+w,y+h)){
+      
+    }
+  }
+  @Override
+  void draw(){
+    if(!collected){
+      
+    }
+  }
 
+}
 
 
 class Screen{
@@ -132,6 +173,7 @@ class Screen{
   boolean loopAnimation = true;
   
   Screen(JSONObject data){
+    id = data.getString("id");
     animation = new PImage[data.getInt("frames")];
     for(int i=0;i<animation.length;i++){
       animation[i] = loadImage(data.getString("name")+i+".png");
