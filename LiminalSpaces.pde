@@ -1,11 +1,14 @@
 
 PGraphics drawBuffer;
+PGraphics screenBuffer;
+PShader dither;
 
-
-int resizeAm = 0;
 void setup(){
   
   fullScreen(P2D);
+  noSmooth();
+  ((PGraphicsOpenGL)g).textureSampling(3);
+  
   int base = 320;
   int min = base;
   
@@ -14,9 +17,43 @@ void setup(){
     resizeAm+=1;
   }
   min-=base;
-  drawBuffer=  createGraphics(base,round(base/2.5),P2D);
+  drawBuffer = createGraphics(base,180);
+  screenBuffer = createGraphics(width,height,P2D);
+  ((PGraphicsOpenGL)screenBuffer).textureSampling(3);
+  screenBuffer.noSmooth();
+  JSONArray itemdata = parseJSONArray(fileToString("gamedata.json"));
+  for(int i = 0;i<itemdata.size();i++){
+    Screen scr = new Screen(itemdata.getJSONObject(i));
+    screenList.add(scr);
+    if(itemdata.getJSONObject(i).hasKey("start")){
+      current=scr;
+    }
+  }
+  
+  dither = loadShader("dither.glsl");
+  dither.init();
   
   
+  
+  
+  
+}
+int resizeAm = 0;
+
+String fileToString(String file){
+  BufferedReader br = createReader(file);
+  String out="";
+  try{
+    String p="";
+    
+    while((p=br.readLine())!=null){
+      out+=p+"\n";
+    }
+    out=out.substring(0,out.length()-1);
+  }catch(Exception e){}
+  
+  return out;
+
 }
 
 void mousePressed(){
@@ -24,7 +61,29 @@ void mousePressed(){
 }
 
 void draw(){
+  background(0);
+  drawBuffer.beginDraw();
+  drawBuffer.background(0);
+  
   current.draw();
+  drawBuffer.endDraw();
+  
+  screenBuffer.beginDraw();
+  screenBuffer.background(0);
+  dither.set("color",0.8,0.8,1.0);
+  
+  dither.set("bayer",new float[]{0,    8*16, 2*16, 10*16,
+                12*16,4*16, 14*16, 6*16,
+                3*16 ,11*16,1*16 , 9*16,
+                15*16,7*16, 13*16, 5*16});
+  screenBuffer.shader(dither);
+  screenBuffer.image(drawBuffer,width/2-resizeAm*(drawBuffer.width/2),height/2-resizeAm*(drawBuffer.height/2),resizeAm*drawBuffer.width,resizeAm*drawBuffer.height);
+  screenBuffer.endDraw();
+  
+  
+  image(screenBuffer,0,0);
+  //translate(width/2,height/2);
+  
 }
 
 
@@ -84,7 +143,7 @@ class Screen{
       JSONObject current = interacts.getJSONObject(i);
       switch(current.getString("type")){
         case "screen switch":
-          ScreenSwitch sw = new ScreenSwitch(data.getInt("x"),data.getInt("y"),data.getInt("w"),data.getInt("h"),data.getString("screen id"));
+          ScreenSwitch sw = new ScreenSwitch(current .getInt("x"),current .getInt("y"),current .getInt("w"),current .getInt("h"),current .getString("screen id"));
           this.interacts.add(sw);
         break;
       }
