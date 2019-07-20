@@ -211,6 +211,9 @@ class ScreenSwitch extends Interactable{
     }
     if((!locked||pass)&&isIn((mouseX+offsetX)/resizeAm,(mouseY+offsetY)/resizeAm,x,y,x+w,y+h)){
       switchScreen(sid);
+      if(unlocks!=null){
+        getInteract(unlocks).locked=false;
+      }
     }
   }
 
@@ -247,6 +250,9 @@ class ItemCollect extends Interactable{
       println("wow");
       inventory.add(it);
       collected = true;
+      if(unlocks!=null){
+        getInteract(unlocks).locked=false;
+      }
     }
   }
   @Override
@@ -299,6 +305,7 @@ class Screen{
             sw.itemPermUnlock = current.getBoolean("item unlocks trigger");
           }
           this.interacts.add(sw);
+          allInteracts.add(sw);
         break;
         case "item collect":
           String iid = current .getJSONObject("item").getString("id");
@@ -317,6 +324,7 @@ class Screen{
             ic.itemPermUnlock = current.getBoolean("item unlocks trigger");
           }
           this.interacts.add(ic);
+          allInteracts.add(ic);
         break;
         
         case "click trigger":
@@ -332,6 +340,7 @@ class Screen{
              ct .itemPermUnlock = current.getBoolean("item unlocks trigger");
           }
           this.interacts.add( ct );
+          allInteracts.add(ct);
         break;
       }
     }
