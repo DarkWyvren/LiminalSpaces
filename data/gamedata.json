@@ -1,0 +1,23 @@
+
+[
+	{
+		"name": "outside",
+		"frames": 2,
+		"loop": true,
+		"interact": [
+			{
+				"type": "screen switch",
+				"x": 83,
+				"y": 113,
+				"w": 34,
+				"h": 51,
+			},
+		],
+		
+		"start":true
+	},
+
+
+
+
+]
