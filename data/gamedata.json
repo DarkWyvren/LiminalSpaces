@@ -81,8 +81,8 @@
 				"id": "collect pot plant",
 				"x": 191,
 				"y": 83,
-				"w": 49,
-				"h": 58,
+				"w": 46,
+				"h": 56,
 				"lock": true,
 				"invisible while locked": true,
 				"item":{

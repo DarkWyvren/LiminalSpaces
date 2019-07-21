@@ -150,6 +150,7 @@ Sample playSample(String name,boolean loop,float gain,float speedOffset){
   //SamplePlaye
   Sample s = new Sample(name,loop);
   s.gain.setGain(gain);
+  
   sounds.add(s);
   s.speedControl.setValue(1+speedOffset);
   return s;

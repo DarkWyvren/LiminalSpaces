@@ -126,6 +126,7 @@ class Item{
 
 abstract class Interactable{
   boolean locked = false;
+  boolean invislocked = false;
   String id;
   
   String usesItem;
@@ -232,6 +233,8 @@ class ScreenSwitch extends Interactable{
 }
 class FrameTrigger extends Interactable{
   int triggerframe ;
+  boolean triggerOnce = true;
+  boolean triggered = false;
   FrameTrigger (int frameToTrigger){
      triggerframe = frameToTrigger;
   }
@@ -239,7 +242,8 @@ class FrameTrigger extends Interactable{
   @Override
   void onFrame(int frame){
     if(!locked&&triggerframe==frame){
-      if(unlocks!=null){
+      if(unlocks!=null&&(!triggerOnce||!triggered)){
+        triggered = true;
         getInteract(unlocks).unlock();
       }
     }
@@ -373,6 +377,10 @@ class Screen{
           ScreenSpriteChange ssc = new ScreenSpriteChange(current.getString("screen id"),current .getString("spritename"),current.getInt("frames"),current.getBoolean("loops"),current.getInt("animation delay"));
           in = ssc;
         break;
+        case "frame trigger":
+          FrameTrigger ft = new FrameTrigger(current .getInt("frame"));
+          in = ft;
+          break;
         case "click trigger":
           Clicktrigger ct = new Clicktrigger(current .getInt("x"),current .getInt("y"),current .getInt("w"),current .getInt("h"));
           in = ct;
@@ -389,6 +397,10 @@ class Screen{
       if(current.hasKey("item unlocks trigger")){
         in.itemPermUnlock = current.getBoolean("item unlocks trigger");
       }
+      if(current.hasKey("invisible while locked")){
+        in.invislocked = current.getBoolean("invisible while locked");
+      }
+      //invislocked 
       this.interacts.add(in);
       allInteracts.add(in);
     }
@@ -431,6 +443,10 @@ class Screen{
     }
     drawBuffer.image(animation[(loopAnimation?frame:min(frame,animation.length-1))%animation.length],0,0);
     for(Interactable i:interacts){
+      if(i.invislocked&&i.locked){
+        continue;
+      }
+      i.onFrame(frame%animation.length);
       i.draw();
     }
     drawBuffer.resetShader();
