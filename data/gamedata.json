@@ -17,11 +17,42 @@
 			},
 			{
 				"type": "screen switch",
-				"id": "enter greenhouse",
+				"id": "enter upstairs",
 				"x": 139,
 				"y": 25,
 				"w": 66,
 				"h": 40,
+				"screen id": "upstairs";
+			},
+		
+		],
+		
+		
+		
+		
+	},
+	{
+		"name": "upstairs",
+		"frames": 2,
+		"id": "upstairs",
+		"loop": true,
+		"interact": [
+			{
+				"type": "screen switch",
+				"id": "enter reception",
+				"x": 251,
+				"y": 26,
+				"w": 44,
+				"h": 117,
+				"screen id": "reception";
+			},
+			{
+				"type": "screen switch",
+				"id": "enter greenhouse",
+				"x": 89,
+				"y": 43,
+				"w": 18,
+				"h": 66,
 				"screen id": "greenhouse";
 			},
 		
