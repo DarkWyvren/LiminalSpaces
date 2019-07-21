@@ -172,12 +172,12 @@
       {
         "type": "item collect",
         "id": "collect wateringcan",
-        "x": 168,
-        "y": 198,
+        "x": 156,
+        "y": 78,
         "w": 40,
         "h": 40,
         "lock": true,
-        "invisible while locked": false,
+        "invisible while locked": true,
         "item":{
           "id":"wateringcan",
           "spritename":"wateringcan"
