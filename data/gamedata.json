@@ -46,6 +46,51 @@
 				"h": 61,
 				"screen id": "hallway";
 			},
+			{
+				"type": "click trigger",
+				"id": "place plant",
+				"x": 132,
+				"y": 69,
+				"w": 23,
+				"h": 21,
+				"needs item": "potplant",
+				"consumes item": true,
+				"unlocks trigger":"place plant animation",
+				
+			},
+			{
+				"type": "change screen sprite",
+				"id": "place plant animation",
+				"lock": true,
+				"spritename": "receptionplant",
+				"frames": 26,
+				"animation delay": 10,
+				"loops": false,
+				"screen id": "reception";
+				"unlocks trigger":"placeplant frame trigger",
+				"play on unlock": "doorstuck.mp3"
+			},
+			{
+				"type": "frame trigger",
+				"id": "placeplant frame trigger",
+				"lock": true,
+				"frame": 25,
+				"unlocks trigger":"collect bulb",
+			},
+			{
+				"type": "item collect",
+				"id": "collect bulb",
+				"x": 140,
+				"y": 77,
+				"w": 13,
+				"h": 17,
+				"lock": true,
+				"invisible while locked": true,
+				"item":{
+					"id":"lightbulb",
+					"spritename":"bulb"
+				}
+			},
 		
 		],
 	},
