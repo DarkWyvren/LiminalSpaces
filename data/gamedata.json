@@ -3,6 +3,28 @@
 	{
 		"name": "outside",
 		"frames": 2,
+		"id": "hallway",
+		"loop": true,
+		"interact": [
+			{
+				"type": "screen switch",
+				"id": "enter bathroom",
+				"x": 143,
+				"y": 58,
+				"w": 15,
+				"h": 96,
+				"screen id": "bathroom";
+			},
+		
+		],
+		
+		
+		
+		"start":true
+	},
+	{
+		"name": "bathroom",
+		"frames": 2,
 		"id": "bathroom",
 		"loop": true,
 		"interact": [
@@ -13,7 +35,7 @@
 				"y": 126,
 				"w": 70,
 				"h": 26,
-				"screen id": "bathroom";
+				"screen id": "hallway";
 			},
 			{
 				"type": "item collect",
@@ -35,11 +57,13 @@
 			"input2": 0.013, 
 			"input3": 0.01, 
 			"input4": 0.011, 
+			"input5": 12, 
+			"input6": 4, 
 			"cinput1": [0,0,0], 
 			"cinput2": [0,0,0] 
 		},
 		
-		"start":true
+		
 	},
 
 

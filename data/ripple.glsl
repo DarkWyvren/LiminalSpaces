@@ -13,12 +13,12 @@ uniform float input1;
 uniform float input2;
 uniform float input3;
 uniform float input4;
-uniform vec3 cinput1;
-uniform vec3 cinput2;
+uniform float input5;
+uniform float input6;
 vec2 res = vec2(320.,180.);
 
 
 void main() {
-  vec4 texColor = texture2D(texture, vertTexCoord.st+vec2(input1* sin(input2*tick),input3* cos(input4*tick))).rgba;
+  vec4 texColor = texture2D(texture, vertTexCoord.st+vec2((input1)* sin(input2*tick+vertTexCoord.s*input5),input3* cos(input4*tick+vertTexCoord.t*input6) )).rgba;
   gl_FragColor = texColor;
 }

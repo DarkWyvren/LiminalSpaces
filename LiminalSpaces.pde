@@ -17,10 +17,12 @@ void setup(){
     resizeAm+=1;
   }
   min-=base;
-  drawBuffer = createGraphics(base,180);
+  drawBuffer = createGraphics(base,180,P2D);
+  ((PGraphicsOpenGL)drawBuffer).textureSampling(3);
   screenBuffer = createGraphics(width,height,P2D);
   ((PGraphicsOpenGL)screenBuffer).textureSampling(3);
   screenBuffer.noSmooth();
+  drawBuffer.noSmooth();
   JSONArray itemdata = parseJSONArray(fileToString("gamedata.json"));
   for(int i = 0;i<itemdata.size();i++){
     Screen scr = new Screen(itemdata.getJSONObject(i));
@@ -138,7 +140,9 @@ ArrayList<Screen> screenList = new ArrayList();
 Screen current = null;
 
 void switchScreen(String id){
+  println("switching to",id);
   for(Screen s:screenList){
+    println("checking",s.id);
     if(s.id.equals(id)){
       current = s;
     }
@@ -178,7 +182,7 @@ class Clicktrigger extends Interactable{
       }
       pass = true;
     }
-    if((!locked||pass)&&isIn((mouseX+offsetX)/resizeAm,(mouseY+offsetY)/resizeAm,x,y,x+w,y+h)){
+    if((!locked||pass)&&isIn((mouseX-offsetX)/resizeAm,(mouseY-offsetY)/resizeAm,x,y,x+w,y+h)){
       getInteract(unlocks).locked=false;
     }
   }
@@ -192,6 +196,7 @@ class ScreenSwitch extends Interactable{
     this.y=y;
     this.w=w;
     this.h=h;
+    println(x,y,w,h);
     sid = screenid;
   }
   void onMousePress(){
@@ -209,13 +214,14 @@ class ScreenSwitch extends Interactable{
       }
       pass = true;
     }
-    if((!locked||pass)&&isIn((mouseX+offsetX)/resizeAm,(mouseY+offsetY)/resizeAm,x,y,x+w,y+h)){
+    if((!locked||pass)&&isIn((mouseX-offsetX)/resizeAm,(mouseY-offsetY)/resizeAm,x,y,x+w,y+h)){
       switchScreen(sid);
       if(unlocks!=null){
         getInteract(unlocks).locked=false;
       }
     }
   }
+  
 
 }
 
@@ -276,7 +282,8 @@ class Screen{
   
   
   PShader shader = null;
-  float input1,input2,input3,input4;
+  JSONObject shaderdata;
+  
   
   Screen(JSONObject data){
     id = data.getString("id");
@@ -285,9 +292,14 @@ class Screen{
       animation[i] = loadImage(data.getString("name")+i+".png");
     }
     loopAnimation = data.getBoolean("loop");
+    if(data.hasKey("shader")){
+      shaderdata = data.getJSONObject("shader");
+      shader = loadShader(shaderdata.getString("name"));
+      shader.init();
+    }
     
     JSONArray interacts = data.getJSONArray("interact");
-    
+
     for(int i = 0;i<interacts.size();i++){
       JSONObject current = interacts.getJSONObject(i);
       switch(current.getString("type")){
@@ -361,6 +373,7 @@ class Screen{
   
   
   int tick = 0;
+  float atick = 0;
   int frame = 0;
   void draw(){
     if(tick>50){
@@ -368,11 +381,23 @@ class Screen{
       frame++;
     }
     tick++;
-    
+    atick++;
+    if(shader!=null){
+      println(tick);
+      shader.set("tick",atick);
+      shader.set("input1",shaderdata.getFloat("input1"));
+      shader.set("input2",shaderdata.getFloat("input2"));
+      shader.set("input3",shaderdata.getFloat("input3"));
+      shader.set("input4",shaderdata.getFloat("input4"));
+      shader.set("input5",shaderdata.getFloat("input5"));
+      shader.set("input6",shaderdata.getFloat("input6"));
+      drawBuffer.shader(shader);
+    }
     drawBuffer.image(animation[(loopAnimation?frame:max(frame,animation.length-1))%animation.length],0,0);
     for(Interactable i:interacts){
       i.draw();
     }
+    drawBuffer.resetShader();
   }
   
   
