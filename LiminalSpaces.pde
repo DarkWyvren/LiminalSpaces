@@ -28,7 +28,7 @@ void setup(){
     Screen scr = new Screen(itemdata.getJSONObject(i));
     screenList.add(scr);
     if(itemdata.getJSONObject(i).hasKey("start")){
-      current=scr;
+      switchScreen(scr.id);
     }
   }
   
