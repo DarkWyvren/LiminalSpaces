@@ -15,6 +15,81 @@
 				"h": 96,
 				"screen id": "bathroom";
 			},
+			{
+				"type": "screen switch",
+				"id": "enter greenhouse",
+				"x": 139,
+				"y": 25,
+				"w": 66,
+				"h": 40,
+				"screen id": "greenhouse";
+			},
+		
+		],
+		
+		
+		
+		"start":true
+	},
+	{
+		"name": "greenhouse",
+		"frames": 2,
+		"id": "greenhouse",
+		"loop": true,
+		"interact": [
+			{
+				"type": "screen switch",
+				"id": "exit greenhouse",
+				"x": 141,
+				"y": 137,
+				"w": 23,
+				"h": 19,
+				"screen id": "hallway";
+			},
+			{
+				"type": "click trigger",
+				"id": "waterplant",
+				"x": 191,
+				"y": 83,
+				"w": 49,
+				"h": 58,
+				"needs item": "wateringcan",
+				"consumes item": true,
+				"unlocks trigger":"waterplant animation",
+				
+			},
+			{
+				"type": "change screen sprite",
+				"id": "waterplant animation",
+				"lock": true,
+				"spritename": "greenhousePlant",
+				"frames": 5,
+				"animation delay": 10,
+				"loops": false,
+				"screen id": "greenhouse";
+				"unlocks trigger":"waterplant frame trigger",
+			},
+			{
+				"type": "frame trigger",
+				"id": "waterplant frame trigger",
+				"lock": true,
+				"frame": 3,
+				"unlocks trigger":"collect pot plant",
+			},
+			{
+				"type": "item collect",
+				"id": "collect pot plant",
+				"x": 191,
+				"y": 83,
+				"w": 49,
+				"h": 58,
+				"lock": true,
+				"invisible while locked": true,
+				"item":{
+					"id":"potplant",
+					"spritename":"potPlant"
+				}
+			},
 		
 		],
 		

@@ -11,7 +11,7 @@ void setup(){
   
   int base = 320;
   int min = base;
-  
+  initAudio();
   while(min<width){
     min+=base;
     resizeAm+=1;
@@ -134,24 +134,30 @@ abstract class Interactable{
   String unlocks;
   abstract void onMousePress();
   void draw(){}
+  void unlock(){locked=false;}
+  void onFrame(int frame){}
 }
 
 ArrayList<Screen> screenList = new ArrayList();
 Screen current = null;
 
 void switchScreen(String id){
-  println("switching to",id);
+  
   for(Screen s:screenList){
-    println("checking",s.id);
+    
     if(s.id.equals(id)){
       current = s;
     }
   }
+  
+  
 }
 
 ArrayList<Interactable> allInteracts = new ArrayList();
 Interactable getInteract(String id){
+  println("getting",id);
   for(Interactable s:allInteracts){
+    println("checking",s.id);
     if(s.id.equals(id)){
       return s;
     }
@@ -183,7 +189,7 @@ class Clicktrigger extends Interactable{
       pass = true;
     }
     if((!locked||pass)&&isIn((mouseX-offsetX)/resizeAm,(mouseY-offsetY)/resizeAm,x,y,x+w,y+h)){
-      getInteract(unlocks).locked=false;
+      getInteract(unlocks).unlock();
     }
   }
 }
@@ -217,14 +223,60 @@ class ScreenSwitch extends Interactable{
     if((!locked||pass)&&isIn((mouseX-offsetX)/resizeAm,(mouseY-offsetY)/resizeAm,x,y,x+w,y+h)){
       switchScreen(sid);
       if(unlocks!=null){
-        getInteract(unlocks).locked=false;
+        getInteract(unlocks).unlock();
       }
     }
   }
   
 
 }
+class FrameTrigger extends Interactable{
+  int triggerframe ;
+  FrameTrigger (int frameToTrigger){
+     triggerframe = frameToTrigger;
+  }
+  void onMousePress(){}
+  @Override
+  void onFrame(int frame){
+    if(!locked&&triggerframe==frame){
+      if(unlocks!=null){
+        getInteract(unlocks).unlock();
+      }
+    }
+  }
+}
+class ScreenSpriteChange extends Interactable{
+  String sid;
+  PImage[] newSprites;
+  boolean loops;
+  int animationspeed;
+  ScreenSpriteChange (String screenid, String spritename, int frames, boolean loops,int animationspeed){
+    sid = screenid;
+    this.animationspeed = animationspeed;
+    this.loops=loops;
+    newSprites = new PImage[frames];
+    for(int i=0;i<newSprites.length;i++){
+      newSprites[i] = loadImage(spritename+i+".png");
+    }
+  }
+  void onMousePress(){}
+  @Override
+  void unlock(){
+    super.unlock();
+    for(Screen s:screenList){
+      if(s.id.equals(sid)){
+        s.animation = newSprites;
+        s.loopAnimation=loops;
+        s.frame=0;
+        s.anispeed = animationspeed;
+      }
+    }
+    if(unlocks!=null){
+      getInteract(unlocks).unlock();
+    }
+  }
 
+}
 class ItemCollect extends Interactable{
   int x,y,w,h;
   Item it;
@@ -257,7 +309,7 @@ class ItemCollect extends Interactable{
       inventory.add(it);
       collected = true;
       if(unlocks!=null){
-        getInteract(unlocks).locked=false;
+        getInteract(unlocks).unlock();
       }
     }
   }
@@ -280,7 +332,7 @@ class Screen{
   
   boolean loopAnimation = true;
   
-  
+  int anispeed = 50;
   PShader shader = null;
   JSONObject shaderdata;
   
@@ -302,22 +354,12 @@ class Screen{
 
     for(int i = 0;i<interacts.size();i++){
       JSONObject current = interacts.getJSONObject(i);
+      Interactable in=null;
       switch(current.getString("type")){
         case "screen switch":
           ScreenSwitch sw = new ScreenSwitch(current .getInt("x"),current .getInt("y"),current .getInt("w"),current .getInt("h"),current .getString("screen id"));
-          sw.id = current .getString("id");
-          sw.locked = current.hasKey("lock");
-          sw.unlocks = current.getString("unlocks trigger");
-          sw.usesItem = current.getString("needs item");
+          in = sw;
           
-          if(current.hasKey("consumes item")){
-            sw.consumesItem = current.getBoolean("consumes item");
-          }
-          if(current.hasKey("item unlocks trigger")){
-            sw.itemPermUnlock = current.getBoolean("item unlocks trigger");
-          }
-          this.interacts.add(sw);
-          allInteracts.add(sw);
         break;
         case "item collect":
           String iid = current .getJSONObject("item").getString("id");
@@ -325,36 +367,30 @@ class Screen{
             itemArchive.put(iid ,new Item(current .getJSONObject("item")));
           }
           ItemCollect ic = new ItemCollect(current .getInt("x"),current .getInt("y"),current .getInt("w"),current .getInt("h"),iid );
-          ic.id = current .getString("id");
-          ic.locked = current.hasKey("lock");
-          ic.unlocks = current.getString("unlocks trigger");
-          ic.usesItem = current.getString("needs item");
-          if(current.hasKey("consumes item")){
-            ic.consumesItem = current.getBoolean("consumes item");
-          }
-          if(current.hasKey("item unlocks trigger")){
-            ic.itemPermUnlock = current.getBoolean("item unlocks trigger");
-          }
-          this.interacts.add(ic);
-          allInteracts.add(ic);
+          in = ic;
         break;
-        
+        case "change screen sprite":
+          ScreenSpriteChange ssc = new ScreenSpriteChange(current.getString("screen id"),current .getString("spritename"),current.getInt("frames"),current.getBoolean("loops"),current.getInt("animation delay"));
+          in = ssc;
+        break;
         case "click trigger":
           Clicktrigger ct = new Clicktrigger(current .getInt("x"),current .getInt("y"),current .getInt("w"),current .getInt("h"));
-           ct .id = current .getString("id");
-           ct .locked = current.hasKey("lock");
-           ct .unlocks = current.getString("unlocks trigger");
-           ct .usesItem = current.getString("needs item");
-          if(current.hasKey("consumes item")){
-             ct .consumesItem = current.getBoolean("consumes item");
-          }
-          if(current.hasKey("item unlocks trigger")){
-             ct .itemPermUnlock = current.getBoolean("item unlocks trigger");
-          }
-          this.interacts.add( ct );
-          allInteracts.add(ct);
+          in = ct;
         break;
       }
+      in.id = current .getString("id");
+      in.locked = current.hasKey("lock");
+      in.unlocks = current.getString("unlocks trigger");
+      in.usesItem = current.getString("needs item");
+      
+      if(current.hasKey("consumes item")){
+        in.consumesItem = current.getBoolean("consumes item");
+      }
+      if(current.hasKey("item unlocks trigger")){
+        in.itemPermUnlock = current.getBoolean("item unlocks trigger");
+      }
+      this.interacts.add(in);
+      allInteracts.add(in);
     }
   }
   
@@ -376,7 +412,7 @@ class Screen{
   float atick = 0;
   int frame = 0;
   void draw(){
-    if(tick>50){
+    if(tick>anispeed){
       tick=0;
       frame++;
     }
@@ -393,7 +429,7 @@ class Screen{
       shader.set("input6",shaderdata.getFloat("input6"));
       drawBuffer.shader(shader);
     }
-    drawBuffer.image(animation[(loopAnimation?frame:max(frame,animation.length-1))%animation.length],0,0);
+    drawBuffer.image(animation[(loopAnimation?frame:min(frame,animation.length-1))%animation.length],0,0);
     for(Interactable i:interacts){
       i.draw();
     }
