@@ -35,11 +35,26 @@ void setup(){
   dither = loadShader("dither.glsl");
   dither.init();
   
-  
-  
-  
-  
 }
+
+Sample activebgMusic;
+Sample fadeInBgMusic;
+float timeofswitch = 0;
+
+void setBgMusic(String name){
+  if(fadeInBgMusic!=null){
+    fadeInBgMusic.player.kill();
+  }
+  if(activebgMusic==null){
+    activebgMusic = playStereoSample(name,true,0.1);
+    return;
+  }
+  fadeInBgMusic = playStereoSample(name,true,0.1);
+  fadeInBgMusic.player.setPosition(activebgMusic.player.getPosition());
+  timeofswitch = tick;
+}
+
+
 float offsetX,offsetY;
 
 int resizeAm = 0;
@@ -66,6 +81,21 @@ void mousePressed(){
 
 float tick=0;
 void draw(){
+  
+  if(activebgMusic!=null){
+    if(fadeInBgMusic!=null){
+      float crossfade = max(0,1-(tick-timeofswitch)*0.02);
+      activebgMusic.gain.setGain(0.1*crossfade);
+      fadeInBgMusic.gain.setGain(0.1*(1-crossfade));
+      if(crossfade<=0){
+        activebgMusic.player.kill();
+        activebgMusic = fadeInBgMusic;
+         fadeInBgMusic = null;
+      }
+    }
+  
+  }
+  
   offsetX=width/2-resizeAm*(drawBuffer.width/2);offsetY=height/2-resizeAm*(drawBuffer.height/2);
   tick++;
   background(0);
@@ -140,7 +170,7 @@ abstract class Interactable{
   void unlock(){
     locked=false; 
     if(playonUnlock!=null){
-      playSample(playonUnlock,false,0.2);
+      playSample(playonUnlock,false,0.4);
     }
   }
   void onFrame(int frame){}
@@ -155,6 +185,8 @@ void switchScreen(String id){
     
     if(s.id.equals(id)){
       current = s;
+      if(s.bgmusic!=null)
+      setBgMusic(s.bgmusic);
     }
   }
   
@@ -353,7 +385,7 @@ class Screen{
   int anispeed = 50;
   PShader shader = null;
   JSONObject shaderdata;
-  
+  String bgmusic;
   
   Screen(JSONObject data){
     id = data.getString("id");
@@ -366,8 +398,10 @@ class Screen{
       shaderdata = data.getJSONObject("shader");
       shader = loadShader(shaderdata.getString("name"));
       shader.init();
+      
+      
     }
-    
+    bgmusic = data.getString("bgmusic");
     JSONArray interacts = data.getJSONArray("interact");
 
     for(int i = 0;i<interacts.size();i++){
