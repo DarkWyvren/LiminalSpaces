@@ -21,8 +21,10 @@
         "y": 112,
         "w": 19,
         "h": 29,
-        "screen id": "hallway";
+        "screen id": "hallway",
+		"unlocks trigger": "test"
       },
+	  
     
     ],
 	"bgmusic": "music0.wav",
@@ -99,6 +101,10 @@
         "screen id": "hallwaydoorclosed";
       },
 	  ],
+<<<<<<< HEAD
+=======
+	  
+>>>>>>> 0df8e2def88e54382b8bfdce7e64c3475fef8f77
 	  "bgmusic": "music1.wav",
   },
     {
