@@ -81,7 +81,7 @@
 				"type": "click trigger",
 				"id": "place plant",
 				"x": 132,
-				"y": 69,
+				"y": 95,
 				"w": 23,
 				"h": 21,
 				"needs item": "potplant",
@@ -97,9 +97,9 @@
 				"frames": 26,
 				"animation delay": 10,
 				"loops": false,
-				"screen id": "reception";
+				"screen id": "reception",	
 				"unlocks trigger":"placeplant frame trigger",
-				"play on unlock": "doorstuck.mp3"
+				"play on unlock": "door_stuck.mp3"
 			},
 			{
 				"type": "frame trigger",
@@ -112,7 +112,7 @@
 				"type": "item collect",
 				"id": "collect bulb",
 				"x": 140,
-				"y": 77,
+				"y": 103,
 				"w": 13,
 				"h": 17,
 				"lock": true,

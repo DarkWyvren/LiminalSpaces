@@ -183,21 +183,23 @@ class Clicktrigger extends Interactable{
   }
   void onMousePress(){
     boolean pass = false;
-    if(usesItem!=null){
-      Item use = getItemInven(usesItem);
-      if(use==null){
-        return;
+    if(isIn((mouseX-offsetX)/resizeAm,(mouseY-offsetY)/resizeAm,x,y,x+w,y+h)){
+      if(usesItem!=null){
+        Item use = getItemInven(usesItem);
+        if(use==null){
+          return;
+        }
+        if(consumesItem){
+          inventory.remove(inventory.indexOf(use));
+        }
+        if(itemPermUnlock){
+          locked = false;
+        }
+        pass = true;
       }
-      if(consumesItem){
-        inventory.remove(inventory.indexOf(use));
+      if((!locked||pass)){
+        getInteract(unlocks).unlock();
       }
-      if(itemPermUnlock){
-        locked = false;
-      }
-      pass = true;
-    }
-    if((!locked||pass)&&isIn((mouseX-offsetX)/resizeAm,(mouseY-offsetY)/resizeAm,x,y,x+w,y+h)){
-      getInteract(unlocks).unlock();
     }
   }
 }
@@ -215,23 +217,25 @@ class ScreenSwitch extends Interactable{
   }
   void onMousePress(){
     boolean pass = false;
-    if(usesItem!=null){
-      Item use = getItemInven(usesItem);
-      if(use==null){
-        return;
+    if(isIn((mouseX-offsetX)/resizeAm,(mouseY-offsetY)/resizeAm,x,y,x+w,y+h)){
+      if(usesItem!=null){
+        Item use = getItemInven(usesItem);
+        if(use==null){
+          return;
+        }
+        if(consumesItem){
+          inventory.remove(inventory.indexOf(use));
+        }
+        if(itemPermUnlock){
+          locked = false;
+        }
+        pass = true;
       }
-      if(consumesItem){
-        inventory.remove(inventory.indexOf(use));
-      }
-      if(itemPermUnlock){
-        locked = false;
-      }
-      pass = true;
-    }
-    if((!locked||pass)&&isIn((mouseX-offsetX)/resizeAm,(mouseY-offsetY)/resizeAm,x,y,x+w,y+h)){
-      switchScreen(sid);
-      if(unlocks!=null){
-        getInteract(unlocks).unlock();
+      if((!locked||pass)){
+        switchScreen(sid);
+        if(unlocks!=null){
+          getInteract(unlocks).unlock();
+        }
       }
     }
   }
@@ -268,6 +272,9 @@ class ScreenSpriteChange extends Interactable{
     newSprites = new PImage[frames];
     for(int i=0;i<newSprites.length;i++){
       newSprites[i] = loadImage(spritename+i+".png");
+      if(newSprites[i].height!=180){
+        newSprites[i]=addBar(newSprites[i]);
+      }
     }
   }
   void onMousePress(){}
@@ -463,6 +470,15 @@ class Screen{
   
  
   
+}
+
+PImage addBar(PImage p){
+  PGraphics pg = createGraphics(320,180);
+  pg.beginDraw();
+  pg.background(0);
+  pg.image(p,0,26);
+  pg.endDraw();
+  return pg;
 }
 
 boolean isTouching(float qx,float qy,float qx2,float qy2,float gx,float gy,float gx2,float  gy2){
