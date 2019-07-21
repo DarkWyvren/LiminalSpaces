@@ -327,6 +327,41 @@ class ScreenSpriteChange extends Interactable{
   }
 
 }
+
+class BGMusicChange extends Interactable{
+  String sid;
+  String musicname;
+  boolean permenant;
+  BGMusicChange (String screenid, String musicname,boolean perm){
+    sid = screenid;
+    this.musicname=musicname;
+    this.permenant = perm;
+  }
+  void onMousePress(){}
+  @Override
+  void unlock(){
+    super.unlock();
+    for(Screen s:screenList){
+      if(s.id.equals(sid)){
+        if(permenant)
+        s.bgmusic=musicname;
+        
+        break;
+      }
+    }
+    if(sid.equals(current.id)){
+      setBgMusic(musicname);
+    }
+    
+    if(unlocks!=null){
+      getInteract(unlocks).unlock();
+    }
+  }
+
+}
+
+
+
 class ItemCollect extends Interactable{
   int x,y,w,h;
   Item it;
@@ -425,6 +460,10 @@ class Screen{
           ScreenSpriteChange ssc = new ScreenSpriteChange(current.getString("screen id"),current .getString("spritename"),current.getInt("frames"),current.getBoolean("loops"),current.getInt("animation delay"));
           in = ssc;
         break;
+        case "change bg music":
+          BGMusicChange bt = new BGMusicChange(current.getString("screen id"),current .getString("music name"),current.getBoolean("perm"));
+          in = bt;
+        break;
         case "frame trigger":
           FrameTrigger ft = new FrameTrigger(current .getInt("frame"));
           in = ft;
@@ -449,6 +488,7 @@ class Screen{
         in.invislocked = current.getBoolean("invisible while locked");
       }
       in.playonUnlock = current.getString("play on unlock");
+      in.playonUnlock = current.getString("changebgmusic");
       //invislocked 
       this.interacts.add(in);
       allInteracts.add(in);
