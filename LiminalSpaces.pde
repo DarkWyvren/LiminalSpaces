@@ -96,6 +96,7 @@ void draw(){
   
   
   image(screenBuffer,0,0);
+  updateAudio();
   //translate(width/2,height/2);
   
 }
@@ -127,6 +128,7 @@ class Item{
 abstract class Interactable{
   boolean locked = false;
   boolean invislocked = false;
+  String playonUnlock;
   String id;
   
   String usesItem;
@@ -135,7 +137,12 @@ abstract class Interactable{
   String unlocks;
   abstract void onMousePress();
   void draw(){}
-  void unlock(){locked=false;}
+  void unlock(){
+    locked=false; 
+    if(playonUnlock!=null){
+      playSample(playonUnlock,false,0.2);
+    }
+  }
   void onFrame(int frame){}
 }
 
@@ -385,7 +392,7 @@ class Screen{
           Clicktrigger ct = new Clicktrigger(current .getInt("x"),current .getInt("y"),current .getInt("w"),current .getInt("h"));
           in = ct;
         break;
-      }
+      }  
       in.id = current .getString("id");
       in.locked = current.hasKey("lock");
       in.unlocks = current.getString("unlocks trigger");
@@ -400,6 +407,7 @@ class Screen{
       if(current.hasKey("invisible while locked")){
         in.invislocked = current.getBoolean("invisible while locked");
       }
+      in.playonUnlock = current.getString("play on unlock");
       //invislocked 
       this.interacts.add(in);
       allInteracts.add(in);

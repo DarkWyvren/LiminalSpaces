@@ -108,6 +108,7 @@
 				"loops": false,
 				"screen id": "greenhouse";
 				"unlocks trigger":"waterplant frame trigger",
+				"play on unlock": "wateringcan_use.mp3"
 			},
 			{
 				"type": "frame trigger",

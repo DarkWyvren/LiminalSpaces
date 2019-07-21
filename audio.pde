@@ -136,6 +136,7 @@ void playSample(String name,float x,float y){
 Sample playSample(String name,boolean loop){
   //SamplePlaye
   Sample s = new Sample(name,loop);
+  s.player.setLoopCrossFade(29);
   sounds.add(s);
   return s;
 }
