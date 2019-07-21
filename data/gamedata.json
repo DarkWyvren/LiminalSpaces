@@ -99,6 +99,7 @@
         "screen id": "hallwaydoorclosed";
       },
 	  ],
+	  "bgmusic": "music1.wav",
   },
     {
     "name": "hallwaydoorclosed",
@@ -182,6 +183,7 @@
         "item":{
           "id":"wateringcan",
           "spritename":"wateringcan"
+
         }
       },
     ], 
@@ -302,10 +304,10 @@
       {
         "type": "screen switch",
         "id": "exit reception",
-        "x": 153,
-        "y": 159,
-        "w": 14,
-        "h": 10,
+        "x": 244,
+        "y": 42,
+        "w": 76,
+        "h": 112,
         "screen id": "upstairs";
       },
       {
@@ -354,6 +356,66 @@
         }
       },
     
+    ],
+  },
+  {
+    "name": "bedroom",
+    "frames": 1,
+    "id": "bedroom",
+    "loop": true,
+    "interact": [
+      {
+        "type": "screen switch",
+        "id": "exit bedroom",
+        "x": 117,
+        "y": 135,
+        "w": 73,
+        "h": 19,
+        "screen id": "upstairs";
+      },
+	  {
+        "type": "click trigger",
+        "id": "change light",
+        "x": 145,
+        "y": 55,
+        "w": 20,
+        "h": 20,
+        "needs item": "lightbulb",
+        "consumes item": true,
+        "unlocks trigger":"turn on light",
+      },
+	  {
+        "type": "change screen sprite",
+        "id": "turn on light",
+        "lock": true,
+        "spritename": "light",
+        "frames": 2,
+        "animation delay": 10,
+        "loops": false,
+        "screen id": "bedroom",  
+        "unlocks trigger":"light frame trigger",
+      },
+	  {
+        "type": "frame trigger",
+        "id": "light frame trigger",
+        "lock": true,
+        "frame": 1,
+        "unlocks trigger":"collect crowbar",
+      },
+	  {
+        "type": "item collect",
+        "id": "collect crowbar",
+        "x": 141,
+        "y": 115,
+        "w": 26,
+        "h": 12,
+        "lock": true,
+        "invisible while locked": true,
+        "item":{
+          "id":"crowbar",
+          "spritename":"crowbar"
+		}
+		},
     ],
   },
 ]

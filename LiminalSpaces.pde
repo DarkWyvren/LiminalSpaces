@@ -46,10 +46,10 @@ void setBgMusic(String name){
     fadeInBgMusic.player.kill();
   }
   if(activebgMusic==null){
-    activebgMusic = playStereoSample(name,true,0.1);
+    activebgMusic = playStereoSample(name,true,0.3);
     return;
   }
-  fadeInBgMusic = playStereoSample(name,true,0.1);
+  fadeInBgMusic = playStereoSample(name,true,0.3);
   fadeInBgMusic.player.setPosition(activebgMusic.player.getPosition());
   timeofswitch = tick;
 }
@@ -85,8 +85,8 @@ void draw(){
   if(activebgMusic!=null){
     if(fadeInBgMusic!=null){
       float crossfade = max(0,1-(tick-timeofswitch)*0.02);
-      activebgMusic.gain.setGain(0.1*crossfade);
-      fadeInBgMusic.gain.setGain(0.1*(1-crossfade));
+      activebgMusic.gain.setGain(0.3*crossfade);
+      fadeInBgMusic.gain.setGain(0.3*(1-crossfade));
       if(crossfade<=0){
         activebgMusic.player.kill();
         activebgMusic = fadeInBgMusic;
