@@ -22,7 +22,6 @@
         "w": 19,
         "h": 29,
         "screen id": "hallway",
-		"unlocks trigger": "test"
       },
 	  
     
@@ -47,7 +46,7 @@
       },
 	 {
         "type": "click trigger",
-        "id": "finalkey",
+        "id": "enter finalkey",
         "x": 105,
         "y": 34,
         "w": 106,
@@ -55,8 +54,40 @@
         "needs item": "finalkey",
         "consumes item": true,
         "unlocks trigger":"final animation"
+
     },
+	{
+        "type": "change screen sprite",
+        "id": "final animation",
+        "lock": true,
+        "spritename": "finaldoor",
+        "frames": 23,
+        "animation delay": 20,
+        "loops": false,
+        "screen id": "finaldoor";
+		"unlocks trigger":"end frame trigger",
+		"play on unlock": "door_lock.mp3"
+      },
+	  {
+        "type": "frame trigger",
+        "id": "end frame trigger",
+        "lock": true,
+        "frame": 22,
+        "unlocks trigger":"end animation",
+		"play on unlock": "musicend.wav"
+      },
+	{
+        "type": "change screen sprite",
+        "id": "end animation",
+        "lock": true,
+        "spritename": "end",
+        "frames": 2,
+        "animation delay": 40,
+        "loops": true,
+        "screen id": "finaldoor";
+      },
     ],
+		"bgmusic": "silence.mp3",
   },
   {
     "name": "outside",
@@ -101,10 +132,6 @@
         "screen id": "hallwaydoorclosed";
       },
 	  ],
-<<<<<<< HEAD
-=======
-	  
->>>>>>> 0df8e2def88e54382b8bfdce7e64c3475fef8f77
 	  "bgmusic": "music1.wav",
   },
     {
@@ -131,10 +158,45 @@
         "h": 113,
         "needs item": "crowbar",
         "consumes item": true,
-        "unlocks trigger":"final animation"
+        "unlocks trigger":"hallwaydoor animation"
     },
+	{
+        "type": "change screen sprite",
+        "id": "hallwaydoor animation",
+        "lock": true,
+        "spritename": "halldoor",
+        "frames": 5,
+        "animation delay": 20,
+        "loops": false,
+        "screen id": "hallwaydoorclosed",  
+        "unlocks trigger":"halldoor frame trigger",
+		"play on unlock": "door_stuck.mp3"
+      },
+	   {
+        "type": "frame trigger",
+        "id": "halldoor frame trigger",
+        "lock": true,
+        "frame": 4,
+        "unlocks trigger":"collect key",
+		"play on unlock": "key_pickup.mp3"
+      },
+      {
+        "type": "item collect",
+        "id": "collect key",
+        "x": 140,
+        "y": 109,
+        "w": 24,
+        "h": 23,
+        "lock": true,
+        "invisible while locked": true,
+        "item":{
+          "id":"finalkey",
+          "spritename":"finalkey"
+        }
+      },
     ],
   },
+  
     {
     "name": "bathroom",
     "frames": 1,
@@ -169,6 +231,7 @@
         "loops": false,
         "screen id": "bathroom",  
         "unlocks trigger":"bathroom frame trigger",
+		"play on unlock": "drain.mp3"
       },
       {
         "type": "frame trigger",
@@ -193,6 +256,8 @@
         }
       },
     ], 
+
+	"bgmusic": "music2.wav",
   },
     {
     "name": "upstairs",
@@ -288,7 +353,7 @@
         "type": "item collect",
         "id": "collect pot plant",
         "x": 191,
-        "y": 83,
+        "y": 84,
         "w": 46,
         "h": 56,
         "lock": true,
@@ -338,7 +403,7 @@
         "loops": false,
         "screen id": "reception",  
         "unlocks trigger":"placeplant frame trigger",
-        "play on unlock": "door_stuck.mp3"
+        "play on unlock": "pickup.mp3"
       },
       {
         "type": "frame trigger",
@@ -389,6 +454,7 @@
         "needs item": "lightbulb",
         "consumes item": true,
         "unlocks trigger":"turn on light",
+		"play on unlock": "bulb.mp3"
       },
 	  {
         "type": "change screen sprite",
