@@ -55,6 +55,24 @@
 				"h": 66,
 				"screen id": "greenhouse";
 			},
+			{
+				"type": "screen switch",
+				"id": "enter bedroom",
+				"x": 161,
+				"y": 45,
+				"w": 35,
+				"h": 63,
+				"screen id": "bedroom";
+			},
+			{
+				"type": "screen switch",
+				"id": "go downstairs",
+				"x": 179,
+				"y": 158,
+				"w": 39,
+				"h": 15,
+				"screen id": "hallway";
+			},
 		
 		],
 		
@@ -75,7 +93,7 @@
 				"y": 94,
 				"w": 36,
 				"h": 61,
-				"screen id": "hallway";
+				"screen id": "upstairs";
 			},
 			{
 				"type": "click trigger",
@@ -148,6 +166,27 @@
 		"start":true
 	},
 	{
+		"name": "bedroom",
+		"frames": 2,
+		"id": "bedroom",
+		"loop": true,
+		"interact": [
+			{
+				"type": "screen switch",
+				"id": "go downstairs",
+				"x": 119,
+				"y": 141,
+				"w": 70,
+				"h": 15,
+				"screen id": "hallway";
+			},
+		
+		],
+		
+	
+	},
+	
+	{
 		"name": "greenhouse",
 		"frames": 2,
 		"id": "greenhouse",
@@ -160,7 +199,7 @@
 				"y": 137,
 				"w": 23,
 				"h": 19,
-				"screen id": "hallway";
+				"screen id": "upstairs";
 			},
 			{
 				"type": "click trigger",
