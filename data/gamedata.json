@@ -5,9 +5,18 @@
     "id": "street",
     "loop": true,
     "interact": [
+	{
+        "type": "screen switch",
+        "id": "enter finaldoor",
+        "x": 138,
+        "y": 111,
+        "w": 21,
+        "h": 31,
+        "screen id": "finaldoor";
+      },
       {
         "type": "screen switch",
-        "id": "enter house",
+        "id": "enter hallway",
         "x": 217,
         "y": 112,
         "w": 19,
@@ -16,10 +25,35 @@
       },
     
     ],
-    
-    
-    
     "start":true
+  },
+  {
+    "name": "finaldoor",
+    "frames": 1,
+    "id": "finaldoor",
+    "loop": true,
+    "interact": [
+	{
+        "type": "screen switch",
+        "id": "enter street",
+        "x": 153,
+        "y": 159,
+        "w": 14,
+        "h": 10,
+        "screen id": "street";
+      },
+	 {
+        "type": "click trigger",
+        "id": "finalkey",
+        "x": 105,
+        "y": 34,
+        "w": 106,
+        "h": 119,
+        "needs item": "finalkey",
+        "consumes item": true,
+        "unlocks trigger":"final animation"
+    },
+    ],
   },
   {
     "name": "outside",
@@ -27,6 +61,15 @@
     "id": "hallway",
     "loop": true,
     "interact": [
+	{
+        "type": "screen switch",
+        "id": "enter street",
+        "x": 153,
+        "y": 159,
+        "w": 14,
+        "h": 10,
+        "screen id": "street";
+      },
       {
         "type": "screen switch",
         "id": "enter bathroom",
@@ -55,6 +98,34 @@
         "screen id": "hallwaydoorclosed";
       },
 	  ],
+  },
+    {
+    "name": "hallwaydoorclosed",
+    "frames": 2,
+    "id": "hallwaydoorclosed",
+    "loop": true,
+    "interact": [
+	{
+        "type": "screen switch",
+        "id": "enter hallway",
+        "x": 153,
+        "y": 159,
+        "w": 14,
+        "h": 10,
+        "screen id": "hallway";
+      },
+	 {
+        "type": "click trigger",
+        "id": "crowbar",
+        "x": 80,
+        "y": 40,
+        "w": 164,
+        "h": 113,
+        "needs item": "crowbar",
+        "consumes item": true,
+        "unlocks trigger":"final animation"
+    },
+    ],
   },
     {
     "name": "bathroom",
@@ -106,12 +177,182 @@
         "w": 40,
         "h": 40,
         "lock": true,
+        "invisible while locked": false,
+        "item":{
+          "id":"wateringcan",
+          "spritename":"wateringcan"
+        }
+      },
+    ], 
+  },
+    {
+    "name": "upstairs",
+    "frames": 2,
+    "id": "upstairs",
+    "loop": true,
+    "interact": [
+	{
+        "type": "screen switch",
+        "id": "enter hallway",
+        "x": 153,
+        "y": 159,
+        "w": 14,
+        "h": 10,
+        "screen id": "hallway";
+      },
+	{
+        "type": "screen switch",
+        "id": "enter bedroom",
+        "x": 89,
+        "y": 43,
+        "w": 18,
+        "h": 66,
+        "screen id": "bedroom";
+      },
+	{
+        "type": "screen switch",
+        "id": "enter greenhouse",
+        "x": 162,
+        "y": 45,
+        "w": 34,
+        "h": 63,
+        "screen id": "greenhouse";
+      },
+      {
+        "type": "screen switch",
+        "id": "enter reception",
+        "x": 251,
+        "y": 26,
+        "w": 44,
+        "h": 117,
+        "screen id": "reception";
+      },
+    ],
+  },
+{
+    "name": "greenhouse",
+    "frames": 2,
+    "id": "greenhouse",
+    "loop": true,
+    "interact": [
+      {
+        "type": "screen switch",
+        "id": "exit greenhouse",
+        "x": 141,
+        "y": 137,
+        "w": 23,
+        "h": 19,
+        "screen id": "upstairs";
+      },
+      {
+        "type": "click trigger",
+        "id": "waterplant",
+        "x": 191,
+        "y": 83,
+        "w": 49,
+        "h": 58,
+        "needs item": "wateringcan",
+        "consumes item": true,
+        "unlocks trigger":"waterplant animation",
+        
+      },
+      {
+        "type": "change screen sprite",
+        "id": "waterplant animation",
+        "lock": true,
+        "spritename": "greenhousePlant",
+        "frames": 5,
+        "animation delay": 10,
+        "loops": false,
+        "screen id": "greenhouse";
+        "unlocks trigger":"waterplant frame trigger",
+        "play on unlock": "wateringcan_use.mp3"
+      },
+      {
+        "type": "frame trigger",
+        "id": "waterplant frame trigger",
+        "lock": true,
+        "frame": 3,
+        "unlocks trigger":"collect pot plant",
+      },
+      {
+        "type": "item collect",
+        "id": "collect pot plant",
+        "x": 191,
+        "y": 83,
+        "w": 46,
+        "h": 56,
+        "lock": true,
+        "invisible while locked": true,
+        "item":{
+          "id":"potplant",
+          "spritename":"potPlant"
+        }
+      },
+    
+    ],
+  },
+  {
+    "name": "reception",
+    "frames": 1,
+    "id": "reception",
+    "loop": true,
+    "interact": [
+      {
+        "type": "screen switch",
+        "id": "exit reception",
+        "x": 153,
+        "y": 159,
+        "w": 14,
+        "h": 10,
+        "screen id": "upstairs";
+      },
+      {
+        "type": "click trigger",
+        "id": "place plant",
+        "x": 132,
+        "y": 95,
+        "w": 23,
+        "h": 21,
+        "needs item": "potplant",
+        "consumes item": true,
+        "unlocks trigger":"place plant animation",
+        
+      },
+      {
+        "type": "change screen sprite",
+        "id": "place plant animation",
+        "lock": true,
+        "spritename": "receptionplant",
+        "frames": 26,
+        "animation delay": 10,
+        "loops": false,
+        "screen id": "reception",  
+        "unlocks trigger":"placeplant frame trigger",
+        "play on unlock": "door_stuck.mp3"
+      },
+      {
+        "type": "frame trigger",
+        "id": "placeplant frame trigger",
+        "lock": true,
+        "frame": 25,
+        "unlocks trigger":"collect bulb",
+      },
+      {
+        "type": "item collect",
+        "id": "collect bulb",
+        "x": 140,
+        "y": 103,
+        "w": 13,
+        "h": 17,
+        "lock": true,
         "invisible while locked": true,
         "item":{
           "id":"lightbulb",
           "spritename":"bulb"
         }
       },
-    ], 
+    
+    ],
   },
 ]
