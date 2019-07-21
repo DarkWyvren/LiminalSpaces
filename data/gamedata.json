@@ -29,6 +29,46 @@
 		
 		
 		
+		
+	},
+	{
+		"name": "reception",
+		"frames": 1,
+		"id": "reception",
+		"loop": true,
+		"interact": [
+			{
+				"type": "screen switch",
+				"id": "exit reception",
+				"x": 284,
+				"y": 94,
+				"w": 36,
+				"h": 61,
+				"screen id": "hallway";
+			},
+		
+		],
+	},
+	{
+		"name": "street",
+		"frames": 1,
+		"id": "outside",
+		"loop": true,
+		"interact": [
+			{
+				"type": "screen switch",
+				"id": "enter house",
+				"x": 217,
+				"y": 112,
+				"w": 19,
+				"h": 29,
+				"screen id": "hallway";
+			},
+		
+		],
+		
+		
+		
 		"start":true
 	},
 	{
@@ -94,8 +134,6 @@
 		],
 		
 		
-		
-		"start":true
 	},
 	{
 		"name": "bathroom",
