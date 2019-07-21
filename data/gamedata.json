@@ -27,7 +27,7 @@
 		
 		],
 		
-		
+		"bgmusic":"music0.wav"
 		
 		
 	},
@@ -76,7 +76,7 @@
 		
 		],
 		
-		
+		"bgmusic":"music2.wav"
 		
 		
 	},
@@ -142,6 +142,7 @@
 			},
 		
 		],
+		"bgmusic":"music1.wav",
 	},
 	{
 		"name": "street",
