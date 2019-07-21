@@ -128,9 +128,9 @@
 		
 		"shader": {
 			"name": "ripple.glsl",
-			"input1": 0.03, 
+			"input1": 0, 
 			"input2": 0.013, 
-			"input3": 0.01, 
+			"input3": 0, 
 			"input4": 0.011, 
 			"input5": 12, 
 			"input6": 4, 
