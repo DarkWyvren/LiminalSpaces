@@ -170,7 +170,7 @@ abstract class Interactable{
   void unlock(){
     locked=false; 
     if(playonUnlock!=null){
-      playSample(playonUnlock,false,0.4);
+      playSample(playonUnlock,false,0.8);
     }
   }
   void onFrame(int frame){}
@@ -327,6 +327,47 @@ class ScreenSpriteChange extends Interactable{
   }
 
 }
+class ScreenChangeOnUnlock extends Interactable{
+  String sid;
+  ScreenChangeOnUnlock(String screenid){
+    sid = screenid;
+  }
+  void onMousePress(){}
+  @Override
+  void unlock(){
+    super.unlock();
+    for(Screen s:screenList){
+      if(s.id.equals(sid)){
+        switchScreen(sid);
+        break;
+      }
+    }
+    if(unlocks!=null){
+      getInteract(unlocks).unlock();
+    }
+  }
+}
+class MultiUnlock extends Interactable{
+  String[] sid;
+  MultiUnlock(String[] screenids){
+    sid = screenids;
+  }
+  void onMousePress(){}
+  @Override
+  void unlock(){
+    super.unlock();
+    for(String s:sid){
+      Interactable i = getInteract(s);
+      if(i!=null){
+        i.unlock();
+        break;
+      }
+    }
+    if(unlocks!=null){
+      getInteract(unlocks).unlock();
+    }
+  }
+}
 
 class BGMusicChange extends Interactable{
   String sid;
@@ -464,6 +505,14 @@ class Screen{
           BGMusicChange bt = new BGMusicChange(current.getString("screen id"),current .getString("music name"),current.getBoolean("perm"));
           in = bt;
         break;
+        case "change screen":
+          ScreenChangeOnUnlock scou = new ScreenChangeOnUnlock(current.getString("screen id"));
+          in = scou;
+        break;
+        case "multi trigger":
+          MultiUnlock mu = new MultiUnlock(current.getJSONArray("triggers").getStringArray());
+          in = mu;
+        break;
         case "frame trigger":
           FrameTrigger ft = new FrameTrigger(current .getInt("frame"));
           in = ft;
@@ -488,7 +537,6 @@ class Screen{
         in.invislocked = current.getBoolean("invisible while locked");
       }
       in.playonUnlock = current.getString("play on unlock");
-      in.playonUnlock = current.getString("changebgmusic");
       //invislocked 
       this.interacts.add(in);
       allInteracts.add(in);

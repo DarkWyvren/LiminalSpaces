@@ -85,6 +85,17 @@
         "animation delay": 40,
         "loops": true,
         "screen id": "finaldoor";
+		"unlocks trigger":"enter greenhouse from final door",
+      },
+	  {
+        "type": "screen switch",
+        "id": "enter greenhouse from final door",
+        "x": 0,
+        "y": 0,
+        "w": 320,
+        "h": 180,
+		"lock": true,
+        "screen id": "greenhouse";
       },
     ],
 		"bgmusic": "silence.mp3",
@@ -192,7 +203,8 @@
         "item":{
           "id":"finalkey",
           "spritename":"finalkey"
-        }
+        },
+		"play on unlock": "key_pickup.mp3"
       },
     ],
   },
